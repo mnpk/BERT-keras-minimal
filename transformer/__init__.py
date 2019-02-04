@@ -69,4 +69,4 @@ def refresh_keras_backend(use_tpu=True):
     return K
 
 
-refresh_keras_backend()
+#refresh_keras_backend()

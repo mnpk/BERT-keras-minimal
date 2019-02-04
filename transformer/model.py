@@ -1,7 +1,7 @@
 import keras
 import keras.backend as K
-from data.vocab import TextEncoder
-from transformer.embedding import Embedding
+print(keras.__version__)
+from transformer.bertembedding import BertEmbedding
 from keras.layers import Conv1D, Dropout, Add, Input
 from transformer.layers import MultiHeadAttention, Gelu, LayerNormalization
 
@@ -57,15 +57,14 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
                        d_hid: int = 768 * 4, residual_dropout: float = 0.1, use_attn_mask: bool = True,
                        embedding_layer_norm: bool = False, neg_inf: float = -1e9, layer_norm_epsilon: float = 1e-5,
                        accurate_gelu: bool = False) -> keras.Model:
-    vocab_size += TextEncoder.SPECIAL_COUNT
     tokens = Input(batch_shape=(None, max_len), name='token_input', dtype='int32')
     segment_ids = Input(batch_shape=(None, max_len), name='segment_input', dtype='int32')
     pos_ids = Input(batch_shape=(None, max_len), name='position_input', dtype='int32')
     attn_mask = Input(batch_shape=(None, 1, max_len, max_len), name='attention_mask_input',
                       dtype=K.floatx()) if use_attn_mask else None
     inputs = [tokens, segment_ids, pos_ids]
-    embedding_layer = Embedding(embedding_dim, embedding_dropout, vocab_size, max_len, trainable_pos_embedding,
-                                use_one_embedding_dropout, embedding_layer_norm, layer_norm_epsilon)
+    embedding_layer = BertEmbedding(embedding_dim, embedding_dropout, vocab_size, max_len, trainable_pos_embedding,
+                                    use_one_embedding_dropout, embedding_layer_norm, layer_norm_epsilon)
     x = embedding_layer(inputs)
     for i in range(num_layers):
         x = EncoderLayer(embedding_dim, num_heads, d_hid, residual_dropout,
@@ -73,3 +72,18 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
     if use_attn_mask:
         inputs.append(attn_mask)
     return keras.Model(inputs=inputs, outputs=[x], name='Transformer')
+
+
+if __name__ == '__main__':
+    sequence_encoder_config = {
+        'embedding_dim': 100,
+        'vocab_size': 10_000,
+        'max_len': 300,
+        'trainable_pos_embedding': False,
+        'num_heads': 2,
+        'num_layers': 3,
+        'd_hid': 12,
+        'use_attn_mask': True
+    }
+    sequence_encoder = create_transformer(**sequence_encoder_config)
+    sequence_encoder.summary()
