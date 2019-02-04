@@ -2,7 +2,8 @@ import keras
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
-from google_bert.modeling import BertConfig
+
+from transformer.bert_config import BertConfig
 from transformer.layers import LayerNormalization, MultiHeadAttention, Gelu
 from transformer.model import create_transformer
 
@@ -159,44 +160,14 @@ def _get_embeddings_name(parts):
 
 
 if __name__ == '__main__':
-
-    BERT_PRETRAINED_DIR = '../../multi_cased_L-12_H-768_A-12'
-    # vocab_size: 119547
-    g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR + '/', use_attn_mask=False)
+    BERT_PRETRAINED_DIR = 'multi_cased_L-12_H-768_A-12/'
+    g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR, use_attn_mask=False)
     g_bert.summary()
-    #g_bert.save('bert_multi_cased_l_12_h_768_a_12.hdf5')
-    #############################################################################################
-    # K.clear_session()
-    # model = keras.models.load_model('bert_multi_cased_l_12_h_768_a_12.hdf5',
-    #                                 custom_objects={'LayerNormalization': LayerNormalization,
-    #                                                 'MultiHeadAttention': MultiHeadAttention,
-    #                                                 'Gelu': Gelu})
-    # model.summary()
-    '''
-    
-    x contains:
-    x[0]: Tokenized text as input. TODO: left or right pad?
-    x[0].shape = (batch_size, seq_len)
-    x[1]: Segment input. keep this as 0
-    x[1].shape = (batch_size, seq_len)
-    x[2]: Position input. Positional encoding of the form: pos_0 = 0; pos_1 = 1, etc.
-    x[2].shape = (batch_size, seq_len)
-    if use_attn_mask:
-        x[3]: the input attention mask, default set to np.ones. see create_attention_mask_from_input_mask in tf-bert modeling.py
-        x[3].shape = (batch_size, 1, seq_len, seq_len)
-    '''
-
-    x = [np.random.randint(0, 100_000, (1, 512)), np.random.randint(0, 1, (1, 512)), np.random.randint(0, 511, (1, 512))]#, np.ones((1, 1, 512, 512))]
-    for item in x:
-        print(item.shape)
-    print(g_bert.inputs)
-    print(g_bert.output)
-    preds = g_bert.predict(x)
-    print(preds.shape)
-    #############################################################################################
+    g_bert.save('bert_multi_cased_l_12_h_768_a_12.hdf5')
+    ############################################################################################
     K.clear_session()
-    '''
-    segment_input === token_type_embeddings, 2 values 2*768=1536
-    position_input == position_embeddings, 512 values, 512*768=393216
-    token_input == word_embeddings! 119547*768 = 91812096 (91736832=119449*768)
-    '''
+    model = keras.models.load_model('bert_multi_cased_l_12_h_768_a_12.hdf5',
+                                    custom_objects={'LayerNormalization': LayerNormalization,
+                                                    'MultiHeadAttention': MultiHeadAttention,
+                                                    'Gelu': Gelu})
+    model.summary()
