@@ -24,7 +24,6 @@ BATCH_SIZE = 16
 LR = 1e-5
 
 df = pd.read_csv("train.csv")
-
 X = df["question_text"].values
 Y = df['target'].values
 print(X[0])  # How did Quebec nationalists see their province as a nation in the 1960s?
@@ -44,7 +43,6 @@ valid_gen = BatchGenerator(X_valid,
                            do_lower_case=False,
                            batch_size=BATCH_SIZE)
 
-
 g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR, use_attn_mask=False, max_len=SEQ_LEN)
 g_bert.summary()
 # Choose Layer 0 as containing the features relevant for classification; see BERT paper for further explanation on
@@ -56,18 +54,19 @@ model = Model(g_bert.inputs, out)
 model.compile(optimizer=Adam(LR), loss=binary_crossentropy, metrics=['accuracy'])
 model.summary()
 model.fit_generator(train_gen,
-                      epochs=3,
-                      verbose=1,
-                      validation_data=valid_gen,
-                      shuffle=True)
+                    epochs=1,
+                    verbose=1,
+                    validation_data=valid_gen,
+                    shuffle=True)
 
 Y_valid_predictions = model.predict_generator(valid_gen, verbose=1)
+Y_valid = Y_valid[:len(Y_valid_predictions)]
 for thresh in np.arange(0.1, 0.501, 0.01):
     thresh = np.round(thresh, 2)
     f1 = metrics.f1_score(Y_valid, (Y_valid_predictions > thresh).astype(int))
     print(f"F1 score at threshold {thresh} is {f1}")
 
 '''
-Best f1-score is .... @threshold of ...
+Best f1-score is .... at threshold of ...
 Note that the results may vary slightly from run to run due to the non-deterministic nature of tensorflow/keras.
 '''
