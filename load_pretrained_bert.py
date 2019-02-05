@@ -41,7 +41,9 @@ def get_bert_weights_for_keras_model(check_point, max_len, model, tf_var_names):
             tensorflow_weight = check_point.get_tensor(var_name)
             keras_weights[w_id] = _set_keras_weight_from_tf_weight(max_len, tensorflow_weight, keras_weight, qkv, unsqueeze, w_id)
 
-    print(set(list(range(len(keras_weights)))) - set(keras_weights_set))
+    keras_layer_not_set = set(list(range(len(keras_weights)))) - set(keras_weights_set)
+    assert len(keras_layer_not_set) == 0, 'Some weights were not set!'
+
     return keras_weights
 
 
@@ -52,20 +54,8 @@ def _set_keras_weight_from_tf_weight(max_len, tensorflow_weight, keras_weight, q
 
         elif w_id == 2:  # word embedding
             keras_weight = tensorflow_weight
-            # # ours: unk, [vocab], pad, msk(mask), bos(cls), del(use sep again), eos(sep)
-            # # theirs: pad, 99 unused, unk, cls, sep, mask, [vocab]
-            # saved = tensorflow_weight  # vocab_size, emb_size
-            # # weights[our_position] = saved[their_position]
-            # keras_weight[0] = saved[1 + TextEncoder.BERT_UNUSED_COUNT]  # unk
-            # keras_weight[1:vocab_size] = saved[-vocab_size + 1:]
-            # keras_weight[vocab_size + TextEncoder.PAD_OFFSET] = saved[0]
-            # keras_weight[vocab_size + TextEncoder.MSK_OFFSET] = saved[4 + TextEncoder.BERT_UNUSED_COUNT]
-            # keras_weight[vocab_size + TextEncoder.BOS_OFFSET] = saved[2 + TextEncoder.BERT_UNUSED_COUNT]
-            # keras_weight[vocab_size + TextEncoder.DEL_OFFSET] = saved[3 + TextEncoder.BERT_UNUSED_COUNT]
-            # keras_weight[vocab_size + TextEncoder.EOS_OFFSET] = saved[3 + TextEncoder.BERT_UNUSED_COUNT]
         else:
             keras_weight[:] = tensorflow_weight if not unsqueeze else tensorflow_weight[None, ...]
-
     else:
         p = {'q': 0, 'k': 1, 'v': 2}[qkv]
         if keras_weight.ndim == 3:
