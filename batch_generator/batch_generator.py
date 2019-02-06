@@ -19,7 +19,6 @@ class BatchGenerator(Sequence):
         self.padding_idx = self.tokizer.vocab['[PAD]']
 
         self.tokenized_texts = [self.tokizer.tokenize(text) for text in tqdm(texts)]
-        print(self.tokenized_texts[0])
         self.tokenized_texts = [['[CLS]'] + text for text in tqdm(self.tokenized_texts)]
 
         self.text_as_sequence = [self.tokizer.convert_tokens_to_ids(tokens) for tokens in tqdm(self.tokenized_texts)]
