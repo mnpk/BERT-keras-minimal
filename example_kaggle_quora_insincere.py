@@ -20,7 +20,7 @@ from load_pretrained_bert import load_google_bert
 
 BERT_PRETRAINED_DIR = '../multi_cased_L-12_H-768_A-12/'
 SEQ_LEN = 100
-BATCH_SIZE = 16
+BATCH_SIZE = 24
 LR = 1e-5
 
 df = pd.read_csv("train.csv")
