@@ -150,7 +150,7 @@ def _get_embeddings_name(parts):
 
 
 if __name__ == '__main__':
-    BERT_PRETRAINED_DIR = 'multi_cased_L-12_H-768_A-12/'
+    BERT_PRETRAINED_DIR = '../../multi_cased_L-12_H-768_A-12/'
     g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR, use_attn_mask=False)
     g_bert.summary()
     g_bert.save('bert_multi_cased_l_12_h_768_a_12.hdf5')

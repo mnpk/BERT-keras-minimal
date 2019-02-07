@@ -3,36 +3,10 @@ Current batch_dot implementation of keras 2.2.4 is not working correctly
 '''
 import tensorflow as tf
 import keras.backend as K
-import keras
-
-py_any = any
 
 
-def ndim(x):
-    """Returns the number of axes in a tensor, as an integer.
-
-    # Arguments
-        x: Tensor or variable.
-
-    # Returns
-        Integer (scalar), number of axes.
-
-    # Examples
-    ```python
-        >>> from keras import backend as K
-        >>> inputs = K.placeholder(shape=(2, 4, 5))
-        >>> val = np.array([[1, 2], [3, 4]])
-        >>> kvar = K.variable(value=val)
-        >>> K.ndim(inputs)
-        3
-        >>> K.ndim(kvar)
-        2
-    ```
-    """
-    dims = x.get_shape()._dims
-    if dims is not None:
-        return len(dims)
-    return None
+py_any = K.py_any
+ndim = K.ndim
 
 
 def batch_dot(x, y, axes=None):

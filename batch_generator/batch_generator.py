@@ -18,11 +18,17 @@ class BatchGenerator(Sequence):
         self.tokizer = FullTokenizer(vocab_file, do_lower_case)
         self.padding_idx = self.tokizer.vocab['[PAD]']
 
-        self.tokenized_texts = [self.tokizer.tokenize(text) for text in tqdm(texts)]
-        self.tokenized_texts = [['[CLS]'] + text for text in tqdm(self.tokenized_texts)]
+        self.text_as_sequence = self._get_text_as_sequence(texts)
 
-        self.text_as_sequence = [self.tokizer.convert_tokens_to_ids(tokens) for tokens in tqdm(self.tokenized_texts)]
-        self.text_as_sequence = pad_sequences(self.text_as_sequence, maxlen=seq_len, padding='post', value=self.padding_idx)
+    def _get_text_as_sequence(self, texts):
+        tokenized_texts = [['[CLS]'] + self.tokizer.tokenize(text) for text in tqdm(texts)]
+        tokenized_texts = [text for text in tqdm(tokenized_texts)]
+        text_as_sequence = [self.tokizer.convert_tokens_to_ids(tokens) for tokens in tqdm(tokenized_texts)]
+        text_as_sequence = pad_sequences(text_as_sequence,
+                                         maxlen=self.seq_len,
+                                         padding='post', truncating='post',
+                                         value=self.padding_idx)
+        return text_as_sequence
 
     def __len__(self):
         return len(self.text_as_sequence) // self.batch_size
