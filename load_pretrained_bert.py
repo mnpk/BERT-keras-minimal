@@ -15,13 +15,15 @@ def load_google_bert(base_location: str = './google_bert/downloads/multilingual_
     var_names = tf.train.list_variables(init_checkpoint)
     check_point = tf.train.load_checkpoint(init_checkpoint)
     model = create_transformer(embedding_layer_norm=True, neg_inf=-10000.0, use_attn_mask=use_attn_mask,
-                               vocab_size=bert_config.vocab_size, accurate_gelu=True, layer_norm_epsilon=1e-12, max_len=max_len,
+                               vocab_size=bert_config.vocab_size, accurate_gelu=True, layer_norm_epsilon=1e-12,
+                               max_len=max_len,
+                               max_position_embeddings = bert_config.max_position_embeddings,
                                use_one_embedding_dropout=True, d_hid=bert_config.intermediate_size,
                                embedding_dim=bert_config.hidden_size, num_layers=bert_config.num_hidden_layers,
                                num_heads=bert_config.num_attention_heads,
                                residual_dropout=bert_config.hidden_dropout_prob,
                                attention_dropout=bert_config.attention_probs_dropout_prob)
-    weights = get_bert_weights_for_keras_model(check_point, max_len, model, var_names)
+    weights = get_bert_weights_for_keras_model(check_point, bert_config.max_position_embeddings, model, var_names)
     model.set_weights(weights)
     return model
 
@@ -151,7 +153,7 @@ def _get_embeddings_name(parts):
 
 if __name__ == '__main__':
     BERT_PRETRAINED_DIR = '../../multi_cased_L-12_H-768_A-12/'
-    g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR, use_attn_mask=False)
+    g_bert = load_google_bert(base_location=BERT_PRETRAINED_DIR, use_attn_mask=False, max_len=128)
     g_bert.summary()
     g_bert.save('bert_multi_cased_l_12_h_768_a_12.hdf5')
     ############################################################################################

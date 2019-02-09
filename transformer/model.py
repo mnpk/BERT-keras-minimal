@@ -52,7 +52,7 @@ class EncoderLayer:
 
 
 def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1, vocab_size: int = 30000,
-                       max_len: int = 512, trainable_pos_embedding: bool = True, num_heads: int = 12,
+                       max_len: int = 512, max_position_embeddings = 512, trainable_pos_embedding: bool = True, num_heads: int = 12,
                        num_layers: int = 12, attention_dropout: float = 0.1, use_one_embedding_dropout: bool = False,
                        d_hid: int = 768 * 4, residual_dropout: float = 0.1, use_attn_mask: bool = True,
                        embedding_layer_norm: bool = False, neg_inf: float = -1e9, layer_norm_epsilon: float = 1e-5,
@@ -63,7 +63,7 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
     attn_mask = Input(batch_shape=(None, 1, max_len, max_len), name='attention_mask_input',
                       dtype=K.floatx()) if use_attn_mask else None
     inputs = [tokens, segment_ids, pos_ids]
-    embedding_layer = BertEmbedding(embedding_dim, embedding_dropout, vocab_size, max_len, trainable_pos_embedding,
+    embedding_layer = BertEmbedding(embedding_dim, embedding_dropout, vocab_size, max_position_embeddings, trainable_pos_embedding,
                                     use_one_embedding_dropout, embedding_layer_norm, layer_norm_epsilon)
     x = embedding_layer(inputs)
     for i in range(num_layers):

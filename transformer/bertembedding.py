@@ -24,18 +24,18 @@ class BertEmbedding(keras.layers.Layer):
         self.vocab_size = vocab_size
 
         # Bert keras uses two segments for next-sentence classification task
-        self.segment_emb = keras.layers.Embedding(2, output_dim, input_length=max_len,
+        self.segment_emb = keras.layers.Embedding(2, output_dim,
                                                   name='SegmentEmbedding')
 
         self.trainable_pos_embedding = trainable_pos_embedding
         if not trainable_pos_embedding:
-            self.pos_emb = keras.layers.Embedding(max_len, output_dim, trainable=False, input_length=max_len,
+            self.pos_emb = keras.layers.Embedding(max_len, output_dim, trainable=False,
                                                   name='PositionEmbedding',
                                                   weights=[_get_pos_encoding_matrix(max_len, output_dim)])
         else:
-            self.pos_emb = keras.layers.Embedding(max_len, output_dim, input_length=max_len, name='PositionEmbedding')
+            self.pos_emb = keras.layers.Embedding(max_len, output_dim, name='PositionEmbedding')
 
-        self.token_emb = keras.layers.Embedding(vocab_size, output_dim, input_length=max_len, name='TokenEmbedding')
+        self.token_emb = keras.layers.Embedding(vocab_size, output_dim, name='TokenEmbedding')
         self.embedding_dropout = keras.layers.Dropout(dropout, name='EmbeddingDropOut')
         self.add_embeddings = keras.layers.Add(name='AddEmbeddings')
         self.use_embedding_layer_norm = use_embedding_layer_norm
