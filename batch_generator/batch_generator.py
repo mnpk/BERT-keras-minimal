@@ -22,7 +22,6 @@ class BatchGenerator(Sequence):
 
     def _get_text_as_sequence(self, texts):
         tokenized_texts = [['[CLS]'] + self.tokizer.tokenize(text) for text in tqdm(texts)]
-        tokenized_texts = [text for text in tqdm(tokenized_texts)]
         text_as_sequence = [self.tokizer.convert_tokens_to_ids(tokens) for tokens in tqdm(tokenized_texts)]
         text_as_sequence = pad_sequences(text_as_sequence,
                                          maxlen=self.seq_len,
