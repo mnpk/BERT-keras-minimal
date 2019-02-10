@@ -19,8 +19,8 @@ from batch_generator.batch_generator import BatchGenerator
 from load_pretrained_bert import load_google_bert
 
 BERT_PRETRAINED_DIR = '../multi_cased_L-12_H-768_A-12/'
-SEQ_LEN = 100
-BATCH_SIZE = 24
+SEQ_LEN = 70
+BATCH_SIZE = 12
 LR = 1e-5
 
 df = pd.read_csv("train.csv")
@@ -67,6 +67,7 @@ for thresh in np.arange(0.1, 0.501, 0.01):
     print(f"F1 score at threshold {thresh} is {f1}")
 
 '''
-Best f1-score is .... at threshold of ...
+After 1 Epoch
+F1 score at threshold 0.32 is 0.687372802960222
 Note that the results may vary slightly from run to run due to the non-deterministic nature of tensorflow/keras.
 '''
