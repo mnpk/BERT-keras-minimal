@@ -36,9 +36,10 @@ def get_bert_weights_for_keras_model(check_point, model, tf_var_names):
     for var_name, _ in tf_var_names:
         qkv, unsqueeze, w_id = _get_tf2keras_weights_name_mapping(var_name)
         if w_id is None:
-            print('not mapped: ', var_name)  # TODO pooler, cls/predictions, cls/seq_relationship
+            # print('not mapped: ', var_name)  # TODO pooler, cls/predictions, cls/seq_relationship
+            pass
         else:
-            print(var_name, ' -> ', model.weights[w_id].name)
+            # print(var_name, ' -> ', model.weights[w_id].name)
             keras_weights_set.append(w_id)
             keras_weight = keras_weights[w_id]
             tensorflow_weight = check_point.get_tensor(var_name)
