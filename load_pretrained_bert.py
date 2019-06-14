@@ -1,7 +1,7 @@
 import keras
+import keras.backend as K
 import numpy as np
 import tensorflow as tf
-import keras.backend as K
 
 from transformer.bert_config import BertConfig
 from transformer.layers import LayerNormalization, MultiHeadAttention, Gelu
@@ -15,18 +15,22 @@ def load_google_bert(base_location: str = './google_bert/downloads/multilingual_
     init_checkpoint = base_location + 'bert_model.ckpt'
     var_names = tf.train.list_variables(init_checkpoint)
     check_point = tf.train.load_checkpoint(init_checkpoint)
-    model = create_transformer(embedding_layer_norm=True, neg_inf=-10000.0, use_attn_mask=use_attn_mask,
-                               vocab_size=bert_config.vocab_size, accurate_gelu=True, layer_norm_epsilon=1e-12,
-                               max_len=max_len,
-                               max_position_embeddings=bert_config.max_position_embeddings,
-                               use_one_embedding_dropout=True, d_hid=bert_config.intermediate_size,
-                               embedding_dim=bert_config.hidden_size, num_layers=bert_config.num_hidden_layers,
-                               num_heads=bert_config.num_attention_heads,
-                               residual_dropout=bert_config.hidden_dropout_prob,
-                               attention_dropout=bert_config.attention_probs_dropout_prob)
+    model, transformer_out_layers = create_transformer(embedding_layer_norm=True, neg_inf=-10000.0,
+                                                       use_attn_mask=use_attn_mask,
+                                                       vocab_size=bert_config.vocab_size, accurate_gelu=True,
+                                                       layer_norm_epsilon=1e-12,
+                                                       max_len=max_len,
+                                                       max_position_embeddings=bert_config.max_position_embeddings,
+                                                       use_one_embedding_dropout=True,
+                                                       d_hid=bert_config.intermediate_size,
+                                                       embedding_dim=bert_config.hidden_size,
+                                                       num_layers=bert_config.num_hidden_layers,
+                                                       num_heads=bert_config.num_attention_heads,
+                                                       residual_dropout=bert_config.hidden_dropout_prob,
+                                                       attention_dropout=bert_config.attention_probs_dropout_prob)
     weights = get_bert_weights_for_keras_model(check_point, model, var_names)
     model.set_weights(weights)
-    return model
+    return model, transformer_out_layers
 
 
 def get_bert_weights_for_keras_model(check_point, model, tf_var_names):

@@ -65,13 +65,15 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
     inputs = [tokens, segment_ids, pos_ids]
     embedding_layer = BertEmbedding(embedding_dim, embedding_dropout, vocab_size, max_position_embeddings, trainable_pos_embedding,
                                     use_one_embedding_dropout, embedding_layer_norm, layer_norm_epsilon)
+    transformer_out_layers = []
     x = embedding_layer(inputs)
     for i in range(num_layers):
         x = EncoderLayer(embedding_dim, num_heads, d_hid, residual_dropout,
                          attention_dropout, use_attn_mask, i, neg_inf, layer_norm_epsilon, accurate_gelu)(x, attn_mask)
+        transformer_out_layers.append(x)
     if use_attn_mask:
         inputs.append(attn_mask)
-    return keras.Model(inputs=inputs, outputs=[x], name='Transformer')
+    return keras.Model(inputs=inputs, outputs=[x], name='Transformer'), transformer_out_layers
 
 
 if __name__ == '__main__':
