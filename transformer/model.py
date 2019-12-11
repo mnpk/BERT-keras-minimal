@@ -18,6 +18,7 @@ class MultiHeadSelfAttention:
     def __call__(self, x, mask):
         output = self.c_attn(x)
         output = self.attn(output) if mask is None else self.attn([output, mask])
+        self.connected_attn = output
         return self.c_attn_proj(output)
 
 
