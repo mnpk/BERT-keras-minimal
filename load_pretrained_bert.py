@@ -15,7 +15,7 @@ def load_google_bert(base_location: str = './google_bert/downloads/multilingual_
     init_checkpoint = base_location + 'bert_model.ckpt'
     var_names = tf.train.list_variables(init_checkpoint)
     check_point = tf.train.load_checkpoint(init_checkpoint)
-    model, transformer_out_layers = create_transformer(embedding_layer_norm=True, neg_inf=-10000.0,
+    model, transformer_out_layers, attention_layers = create_transformer(embedding_layer_norm=True, neg_inf=-10000.0,
                                                        use_attn_mask=use_attn_mask,
                                                        vocab_size=bert_config.vocab_size, accurate_gelu=True,
                                                        layer_norm_epsilon=1e-12,
@@ -30,7 +30,7 @@ def load_google_bert(base_location: str = './google_bert/downloads/multilingual_
                                                        attention_dropout=bert_config.attention_probs_dropout_prob)
     weights = get_bert_weights_for_keras_model(check_point, model, var_names)
     model.set_weights(weights)
-    return model, transformer_out_layers
+    return model, transformer_out_layers, attention_layers
 
 
 def get_bert_weights_for_keras_model(check_point, model, tf_var_names):
