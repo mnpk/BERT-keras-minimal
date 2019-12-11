@@ -69,8 +69,9 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
     attention_layers = []
     x = embedding_layer(inputs)
     for i in range(num_layers):
-        x = EncoderLayer(embedding_dim, num_heads, d_hid, residual_dropout,
-                         attention_dropout, use_attn_mask, i, neg_inf, layer_norm_epsilon, accurate_gelu)(x, attn_mask)
+        layer = EncoderLayer(embedding_dim, num_heads, d_hid, residual_dropout,
+                         attention_dropout, use_attn_mask, i, neg_inf, layer_norm_epsilon, accurate_gelu)
+        x = layer(x, attn_mask)
         transformer_out_layers.append(x)
         attention_layers.append(x.attention)
     if use_attn_mask:
