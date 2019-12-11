@@ -73,7 +73,7 @@ def create_transformer(embedding_dim: int = 768, embedding_dropout: float = 0.1,
                          attention_dropout, use_attn_mask, i, neg_inf, layer_norm_epsilon, accurate_gelu)
         x = layer(x, attn_mask)
         transformer_out_layers.append(x)
-        attention_layers.append(x.attention)
+        attention_layers.append(layer.attention)
     if use_attn_mask:
         inputs.append(attn_mask)
     return keras.Model(inputs=inputs, outputs=[x], name='Transformer'), transformer_out_layers, attention_layers
